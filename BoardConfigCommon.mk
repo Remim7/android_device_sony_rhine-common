@@ -19,9 +19,10 @@ TARGET_SPECIFIC_HEADER_PATH += device/sony/rhine-common/include
 
 # Platform
 BOARD_VENDOR_PLATFORM := rhine
-PRODUCT_PLATFORM:= rhine
+PRODUCT_PLATFORM := rhine
 
 # Kernel information
+BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_BASE     := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_CMDLINE  := androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.bootdevice=msm_sdcc.1 vmalloc=300M dwc3.maximum_speed=high dwc3_msm.prop_chg_detect=Y
@@ -29,7 +30,10 @@ BOARD_MKBOOTIMG_ARGS  := --ramdisk_offset 0x02000000 --tags_offset 0x01E00000
 BOARD_KERNEL_SEPARATED_DT := true
 
 # ANT+
-BOARD_ANT_WIRELESS_DEVICE := "vfs-prerelease"
+BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
+
+# Audio
+USE_LEGACY_LOCAL_AUDIO_HAL := true
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -37,7 +41,7 @@ BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT := true
 
 # CM Hardware
-BOARD_HARDWARE_CLASS += device/sony/rhine-common/cmhw
+BOARD_HARDWARE_CLASS += device/sony/rhine-common/lineagehw
 
 # Dumpstate
 BOARD_LIB_DUMPSTATE := libdumpstate.sony
@@ -50,8 +54,22 @@ TARGET_QCOM_NO_FM_FIRMWARE := true
 # Init
 TARGET_INIT_VENDOR_LIB := libinit_rhine
 
-# RIL
-BOARD_HAS_RIL_LEGACY_PAP := true
+# Shims
+TARGET_LD_SHIM_LIBS := \
+/system/vendor/bin/credmgrd|/system/vendor/lib/libshims_signal.so \
+/system/vendor/bin/iddd|/system/vendor/lib/libshims_idd.so \
+/system/vendor/bin/suntrold|/system/vendor/lib/libshims_signal.so \
+/system/lib/hw/camera.vendor.qcom.so|/system/vendor/lib/libsonycamera.so \
+/system/lib/hw/camera.vendor.qcom.so|libshim_camera.so \
+/system/lib/hw/camera.vendor.qcom.so|libshim_cald.so \
+/system/lib/hw/camera.vendor.qcom.so|libsensor.so \
+/system/lib/libcald_pal.so|/system/vendor/lib/libshim_cald.so \
+/system/lib/libcammw.so|libshim_cald.so \
+/system/lib/libcammw.so|libsensor.so \
+/system/vendor/bin/mm-qcamera-daemon|libshim_atomic.so \
+/system/vendor/bin/mm-qcamera-daemon|libandroid.so \
+/system/lib/libsomc_chokoballpal.so|/system/vendor/lib/libshim_camera.so \
+
 
 # SELinux
 BOARD_SEPOLICY_DIRS += \
@@ -71,12 +89,16 @@ BOARD_HOSTAPD_PRIVATE_LIB        := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 WIFI_DRIVER_FW_PATH_STA          := "sta"
 WIFI_DRIVER_FW_PATH_AP           := "ap"
 
+# RIL
+BOARD_PROVIDES_LIBRIL := true
+
 # Filesystem
 BOARD_FLASH_BLOCK_SIZE := 131072
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
 # Recovery
+TARGET_RECOVERY_FSTAB := device/sony/rhine-common/rootdir/fstab.full
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_23x41.h\"
